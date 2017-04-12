@@ -34,6 +34,7 @@
                     <input type="submit" value="查詢" />
                     <input type="reset" value="清除" />
                     @Html.ActionLink("新增訂單", "InsertOrder")
+                    
                 </td>
 
             </tr>
@@ -80,8 +81,8 @@
 }
 
 <script type="text/javascript">
-
-
+    
+    //按刪除POST JSON到DeleteOrder
     $(".btnDelete").click(function (e) {
 
         var tr = $(this).closest('tr')
@@ -91,7 +92,7 @@
             data: "orderId=" + $(this).next().val(),
             dataType: "json",
             success: function (response) {
-                $(tr).remove();
+                $(tr).remove();  //那行刪掉
             }
         });
         return false;

@@ -55,16 +55,40 @@ namespace salesProject.Controllers
         public ActionResult InsertOrder(Models.Order order)
         {
             Models.OrderService orderService = new Models.OrderService();
-            
-            //檢查是否驗證成功
-            if (ModelState.IsValid)
-            {
-                ViewBag.Suess = "新增成功";
-                return RedirectToAction("Index");
-
-            }
-            return View(order);
+            int orderid = orderService.InsertOrder(order);
           
+                //檢查是否驗證成功
+                if (ModelState.IsValid)
+                {
+                    return RedirectToAction("Index", new { orderid });
+
+                }
+            
+            
+            return View("InsertOrder", order);
+          
+        }
+
+        /// <summary>
+        /// 刪除訂單功能
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns>json true or false</returns>
+        [HttpPost]
+        public JsonResult DeleteOrder(string orderId)
+        {
+            try
+            {
+                Models.OrderService orderService = new Models.OrderService();
+                orderService.DeleteOrderById(orderId);
+                return this.Json(true);
+            }
+            catch (Exception)
+            {
+
+                return this.Json(false);
+            }
+
         }
 
     }
