@@ -15,11 +15,9 @@ namespace salesProject.Models
         /// <summary>
         /// 建構式
         /// </summary>
-        public Order()
+        public  Order()
         {
-            var ods = new List<Models.OrderDetails>();
-            ods.Add(new OrderDetails() { ProductId = 58 });
-            this.OrderDetails = ods;
+           
         }
        
 

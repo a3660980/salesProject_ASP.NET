@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Web.Mvc;
 
 
@@ -105,6 +106,42 @@ namespace salesProject.Models
             }
             return result;
         }
+
+        /// <summary>
+        /// 用orderid取得資料
+        /// </summary>
+        /// <param name="OrderId"></param>
+        /// <returns>order</returns>
+        public Models.Order GetOrderById(string OrderId)
+        {
+            DataTable dt = new DataTable();
+            string sql = @"SELECT 
+					A.OrderId,A.CustomerID,B.Companyname As CustName,
+					A.EmployeeID,C.lastname+ C.firstname As EmpName,
+					A.Orderdate,A.RequireDdate,A.ShippedDate,
+					A.ShipperId,D.companyname As ShipperName,A.Freight,
+					A.ShipName,A.ShipAddress,A.ShipCity,A.ShipRegion,A.ShipPostalCode,A.ShipCountry
+					From Sales.Orders As A 
+					INNER JOIN Sales.Customers As B ON A.CustomerID=B.CustomerID
+					INNER JOIN HR.Employees As C On A.EmployeeID=C.EmployeeID
+					inner JOIN Sales.Shippers As D ON A.shipperid=D.shipperid
+					Where  A.OrderId=@OrderId";
+
+
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);              
+                cmd.Parameters.Add(new SqlParameter("@OrderId", OrderId == null ? string.Empty : OrderId));
+                SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
+                sqlAdapter.Fill(dt);
+                conn.Close();
+            }
+
+
+            return this.MapOrderDataToList(dt).FirstOrDefault();
+        }
+
 
         /// <summary>
 		/// 依照條件取得訂單資料

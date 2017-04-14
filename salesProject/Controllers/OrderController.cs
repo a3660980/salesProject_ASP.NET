@@ -92,11 +92,14 @@ namespace salesProject.Controllers
         }
 
         [HttpGet]
-        public ActionResult UpdateOrder(string orderId)
+        public ActionResult UpdateOrder(string id)
         {
+            ViewBag.Emp = OrderService.GetEmp();
+            ViewBag.Product = OrderService.GetProduct();
+            ViewBag.Customer = OrderService.GetCustomer();
             Models.OrderService orderservice = new Models.OrderService();
-           // Models.Order order = orderservice.
-            return View(new Models.Order());
+            Models.Order model = orderservice.GetOrderById(id);
+            return View(model);
         }
 
     }
