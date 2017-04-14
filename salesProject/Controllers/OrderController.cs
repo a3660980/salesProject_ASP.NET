@@ -60,7 +60,7 @@ namespace salesProject.Controllers
                 //檢查是否驗證成功
                 if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Index", new { orderid });
+                    return RedirectToAction("Index", new {orderid=orderid });
 
                 }
             
@@ -81,15 +81,24 @@ namespace salesProject.Controllers
             {
                 Models.OrderService orderService = new Models.OrderService();
                 orderService.DeleteOrderById(orderId);
-                return this.Json(true);
+                return this.Json(true);//成功回傳TRUE
             }
             catch (Exception)
             {
 
-                return this.Json(false);
+                return this.Json(false);//失敗回傳FALSE
             }
 
         }
 
+        [HttpGet]
+        public ActionResult UpdateOrder(string orderId)
+        {
+            Models.OrderService orderservice = new Models.OrderService();
+           // Models.Order order = orderservice.
+            return View(new Models.Order());
+        }
+
     }
+
 }

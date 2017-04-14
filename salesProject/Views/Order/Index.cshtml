@@ -3,11 +3,19 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <h2>訂單查詢</h2>
 @using (Html.BeginForm("Index", "Order", FormMethod.Post, new { id = "Form1" }))
 {
     <div id="SearchConditionSection">
         <table class="table table-bordered">
+            <tr>
+                <td>客戶編號</td>
+                <td>
+                    @Html.TextBoxFor(model => model.OrderId)
+
+                </td>
+            </tr>
             <tr>
                 <td>客戶名稱</td>
                 <td>
@@ -32,7 +40,7 @@
                 <td></td>
                 <td>
                     <input type="submit" value="查詢" />
-                    <input type="reset" value="清除" />
+                   <input type="button" value="清除" onclick="location.href='/Order'"/>
                     @Html.ActionLink("新增訂單", "InsertOrder")
                     
                 </td>
@@ -50,6 +58,7 @@
                 <tr>
                     <td>訂單編號</td>
                     <td>客戶名稱</td>
+                    <td>員工編號</td>
                     <td>訂購日期</td>
                     <td>發貨日期</td>
                     <td></td>
@@ -62,6 +71,7 @@
                         <tr id='@item.OrderId'>
                             <td>@item.OrderId</td>
                             <td>@item.CustName</td>
+                            <td>@item.EmployeeID</td>
                             <td>@item.Orderdate</td>
                             <td>@item.ShippedDate</td>
                             <td>@Html.ActionLink("修改", "Update", new { id = item.OrderId })</td>
@@ -84,17 +94,23 @@
     
     //按刪除POST JSON到DeleteOrder
     $(".btnDelete").click(function (e) {
-
-        var tr = $(this).closest('tr')
-        $.ajax({
-            type: "POST",
-            url: "/Order/DeleteOrder",
-            data: "orderId=" + $(this).next().val(),
-            dataType: "json",
-            success: function (response) {
-                $(tr).remove();  //那行刪掉
-            }
-        });
+        
+        var r = confirm("你確定要刪除嗎?");
+        if (r == true) {
+            var tr = $(this).closest('tr')
+            $.ajax({
+                type: "POST",
+                url: "/Order/DeleteOrder",
+                data: "orderId=" + $(this).next().val(),
+                dataType: "json",
+                success: function (response) {
+                    $(tr).remove();  //那行刪掉
+                }
+            });
+        } else {
+           
+        }
+       
         return false;
     });
 

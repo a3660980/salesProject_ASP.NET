@@ -32,6 +32,7 @@ namespace salesProject.Models
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
+           
                 sqlAdapter.Fill(dt);
                 conn.Close();
             }
@@ -59,7 +60,7 @@ namespace salesProject.Models
         }
 
         /// <summary>
-        /// 取得產品資料
+        /// 取得客戶資料
         /// </summary>
         /// <returns></returns>
         public List<SelectListItem> GetCustomer()
@@ -89,7 +90,11 @@ namespace salesProject.Models
         {
             List<SelectListItem> result = new List<SelectListItem>();
 
-
+            result.Add(new SelectListItem()
+            {
+                Text = "請選擇資料",
+                Value = ""
+            });
             foreach (DataRow row in dt.Rows)
             {
                 result.Add(new SelectListItem()
@@ -119,14 +124,16 @@ namespace salesProject.Models
 					INNER JOIN Sales.Customers As B ON A.CustomerID=B.CustomerID
 					INNER JOIN HR.Employees As C On A.EmployeeID=C.EmployeeID
 					inner JOIN Sales.Shippers As D ON A.shipperid=D.shipperid
-					Where (B.Companyname Like @CustName Or @CustName='') Or 
-						  (A.Orderdate=@Orderdate Or @Orderdate='') ";
+					Where (A.OrderId Like '%' + @OrderId + '%' Or @OrderId='' ) And  (B.Companyname Like '%' + @CustName + '%' Or @CustName='') And 
+						  (A.Orderdate=@Orderdate Or @Orderdate='') And (A.EmployeeID=@EmployeeID Or @EmployeeID='')  ";
 
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@EmployeeID", arg.EmployeeID == null ? string.Empty : arg.EmployeeID));
+                cmd.Parameters.Add(new SqlParameter("@OrderId", arg.OrderId == null ? string.Empty : arg.OrderId));
                 cmd.Parameters.Add(new SqlParameter("@CustName", arg.CustName == null ? string.Empty : arg.CustName));
                 cmd.Parameters.Add(new SqlParameter("@Orderdate", arg.OrderDate == null ? string.Empty : arg.OrderDate));
                
@@ -214,6 +221,9 @@ namespace salesProject.Models
                 orderId = Convert.ToInt32(cmd.ExecuteScalar()); ///回傳新增訂單的orderId並使用Convert轉型
                 conn.Close();
             }
+
+
+             
             return orderId;
 
         }

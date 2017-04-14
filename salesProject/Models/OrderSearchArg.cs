@@ -7,6 +7,7 @@ namespace salesProject.Models
 {
     public class OrderSearchArg
     {
+        public string OrderId { get; set; }
         public string CustName { get; set; }
         public string OrderDate { get; set; }
         public string EmployeeID { get; set; }
