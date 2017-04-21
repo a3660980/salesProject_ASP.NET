@@ -30,6 +30,6 @@ namespace salesProject.Models
         /// <summary>
         /// 折扣
         /// </summary>
-        public int Discount { get; set; }
+        public double Discount { get; set; }
     }
 }

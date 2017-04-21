@@ -115,6 +115,7 @@ namespace salesProject.Models
         public Models.Order GetOrderById(string OrderId)
         {
             DataTable dt = new DataTable();
+            DataTable dtDetails = new DataTable();
             string sql = @"SELECT 
 					A.OrderId,A.CustomerID,B.Companyname As CustName,
 					A.EmployeeID,C.lastname+ C.firstname As EmpName,
@@ -126,20 +127,32 @@ namespace salesProject.Models
 					INNER JOIN HR.Employees As C On A.EmployeeID=C.EmployeeID
 					inner JOIN Sales.Shippers As D ON A.shipperid=D.shipperid
 					Where  A.OrderId=@OrderId";
-
+            string details = @"SELECT * FROM Sales.OrderDetails WHERE OrderID = @OrderID;";
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand(sql, conn);              
-                cmd.Parameters.Add(new SqlParameter("@OrderId", OrderId == null ? string.Empty : OrderId));
-                SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
-                sqlAdapter.Fill(dt);
+                SqlDataAdapter sqlAdapter = new SqlDataAdapter();
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@OrderId", OrderId == null ? string.Empty : OrderId));
+                    sqlAdapter = new SqlDataAdapter(cmd);
+                    sqlAdapter.Fill(dt);
+                }
+
+                using (SqlCommand cmd = new SqlCommand(details, conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@OrderId", OrderId == null ? string.Empty : OrderId));
+                    sqlAdapter = new SqlDataAdapter(cmd);
+                    sqlAdapter.Fill(dtDetails);
+                }
+
+              
                 conn.Close();
             }
 
 
-            return this.MapOrderDataToList(dt).FirstOrDefault();
+            return this.MapOrderDataToList(dt,dtDetails).FirstOrDefault();
         }
 
 
@@ -180,15 +193,29 @@ namespace salesProject.Models
             }
 
 
-            return this.MapOrderDataToList(dt);
+            return this.MapOrderDataToList(dt,null);
         }
 
 
-        private List<Models.Order> MapOrderDataToList(DataTable orderData)
+        private List<Models.Order> MapOrderDataToList(DataTable orderData,DataTable dtDetails)
         {
             List<Models.Order> result = new List<Order>();
-
-
+            List<Models.OrderDetails> Details = new List<OrderDetails>();
+            if(dtDetails!=null)
+            {
+                foreach (DataRow row in dtDetails.Rows)
+                {
+                    Details.Add(new OrderDetails()
+                    {
+                        OrderId = Convert.ToInt32(row["OrderID"]),
+                        ProductId = Convert.ToInt32(row["ProductID"]),
+                        UnitPrice = Convert.ToInt32(row["UnitPrice"]),
+                        Qty = Convert.ToDecimal(row["Qty"]),
+                        Discount = Convert.ToDouble(row["Discount"])
+                    });
+                }
+            }
+            
             foreach (DataRow row in orderData.Rows)
             {
                 result.Add(new Order()
@@ -209,9 +236,11 @@ namespace salesProject.Models
                     ShipperId = (int)row["ShipperId"],
                     ShipperName = row["ShipperName"].ToString(),
                     ShipPostalCode = row["ShipPostalCode"].ToString(),
-                    ShipRegion = row["ShipRegion"].ToString()
+                    ShipRegion = row["ShipRegion"].ToString(),
+                    OrderDetails= Details
                 });
             }
+            
             return result;
         }
 
@@ -236,27 +265,69 @@ namespace salesProject.Models
 						)
 					    select @@IDENTITY
 						";
+
+            string orderDetialSQL = @"Insert INTO Sales.OrderDetails
+                                      (
+                                        OrderID,ProductID,UnitPrice,Qty,Discount   
+                                      )
+                                    VALUES
+                                    (
+                                        @OrderID,@ProductID,@UnitPrice,@Qty,@Discount
+                                    )"; 
             int orderId;
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+                
             {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
-                cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
-                cmd.Parameters.Add(new SqlParameter("@orderdate", order.Orderdate));
-                cmd.Parameters.Add(new SqlParameter("@requireddate", order.RequireDdate));
-                cmd.Parameters.Add(new SqlParameter("@shippeddate", order.ShippedDate));
-                cmd.Parameters.Add(new SqlParameter("@shipperid", order.ShipperId));
-                cmd.Parameters.Add(new SqlParameter("@freight", order.Freight));
-                cmd.Parameters.Add(new SqlParameter("@shipname", order.ShipperName));
-                cmd.Parameters.Add(new SqlParameter("@shipaddress", order.ShipAddress));
-                cmd.Parameters.Add(new SqlParameter("@shipcity", order.ShipCity));
-                cmd.Parameters.Add(new SqlParameter("@shipregion", order.ShipRegion));
-                cmd.Parameters.Add(new SqlParameter("@shippostalcode", order.ShipPostalCode));
-                cmd.Parameters.Add(new SqlParameter("@shipcountry", order.ShipCountry));
+                SqlTransaction transaction = conn.BeginTransaction("InsertOrder");
+                try
+                {
+                   using( SqlCommand cmd = new SqlCommand(sql, conn)) {
+                        cmd.Transaction = transaction;
+                        cmd.Parameters.Add(new SqlParameter("@CustomerID", order.CustomerID));
+                        cmd.Parameters.Add(new SqlParameter("@EmployeeID", order.EmployeeID));
+                        cmd.Parameters.Add(new SqlParameter("@orderdate", order.Orderdate));
+                        cmd.Parameters.Add(new SqlParameter("@requireddate", order.RequireDdate));
+                        cmd.Parameters.Add(new SqlParameter("@shippeddate", order.ShippedDate));
+                        cmd.Parameters.Add(new SqlParameter("@shipperid", order.ShipperId));
+                        cmd.Parameters.Add(new SqlParameter("@freight", order.Freight));
+                        cmd.Parameters.Add(new SqlParameter("@shipname", order.ShipperName));
+                        cmd.Parameters.Add(new SqlParameter("@shipaddress", order.ShipAddress));
+                        cmd.Parameters.Add(new SqlParameter("@shipcity", order.ShipCity));
+                        cmd.Parameters.Add(new SqlParameter("@shipregion", order.ShipRegion));
+                        cmd.Parameters.Add(new SqlParameter("@shippostalcode", order.ShipPostalCode));
+                        cmd.Parameters.Add(new SqlParameter("@shipcountry", order.ShipCountry));
 
-                orderId = Convert.ToInt32(cmd.ExecuteScalar()); ///回傳新增訂單的orderId並使用Convert轉型
-                conn.Close();
+                        orderId = Convert.ToInt32(cmd.ExecuteScalar()); ///回傳新增訂單的orderId並使用Convert轉型
+                    }
+
+                    foreach (var OrderDetail in order.OrderDetails)
+                    {
+                        using (SqlCommand cmd = new SqlCommand(orderDetialSQL, conn))
+                        {
+                            cmd.Transaction = transaction;
+                            cmd.Parameters.Add(new SqlParameter("@OrderID", orderId));
+                            cmd.Parameters.Add(new SqlParameter("@ProductID", OrderDetail.ProductId));
+                            cmd.Parameters.Add(new SqlParameter("@UnitPrice", OrderDetail.UnitPrice));
+                            cmd.Parameters.Add(new SqlParameter("@Qty", OrderDetail.Qty));
+                            cmd.Parameters.Add(new SqlParameter("@Discount", OrderDetail.Discount));
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    transaction.Commit();
+                }
+                catch (Exception Exception)
+                {
+                    transaction.Rollback();
+                    throw Exception;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+                
+        
             }
 
 

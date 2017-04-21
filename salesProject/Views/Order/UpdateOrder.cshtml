@@ -1,5 +1,6 @@
 ﻿@model salesProject.Models.Order
 
+
 @{
     ViewBag.Title = "UpdateOrder";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -132,18 +133,18 @@
                 <td>小計</td>
                 <td></td>
             </tr>
-            <tbody id="tbContent">
-
-                @for (int i = 0; i < Model.OrderDetails.Count; i++)
-                {
-                    <tr>
-                        <td>@Html.DropDownListFor(m => Model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
-                        <td>@Html.TextBoxFor(m => Model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
-                        <td>@Html.TextBoxFor(m => Model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
-                        <td></td>
-                        <td><button type="button" class="btnRemove">取消</button></td>
-                    </tr>
-                }
+            <tbody id="tbContent">              
+                    @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                    {
+                        <tr>
+                            <td>@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
+                            <td>@Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
+                            <td>@Html.TextBoxFor(model => model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
+                            <td></td>
+                            <td><button type="button" class="btnRemove">取消</button></td>
+                        </tr>
+                    }
+                
             </tbody>
 
         </table>

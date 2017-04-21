@@ -43,7 +43,9 @@ namespace salesProject.Controllers
             ViewBag.Emp = OrderService.GetEmp();
             ViewBag.Product = OrderService.GetProduct();
             ViewBag.Customer = OrderService.GetCustomer();
-            return View(new Models.Order());
+            Models.Order order = new Models.Order();
+            order.OrderDetails =new List<Models.OrderDetails>();
+            return View(order);
         }
 
 
@@ -94,6 +96,10 @@ namespace salesProject.Controllers
         [HttpGet]
         public ActionResult UpdateOrder(string id)
         {
+            if(id == null)
+            {
+                return RedirectToAction("Index");
+            }
             ViewBag.Emp = OrderService.GetEmp();
             ViewBag.Product = OrderService.GetProduct();
             ViewBag.Customer = OrderService.GetCustomer();

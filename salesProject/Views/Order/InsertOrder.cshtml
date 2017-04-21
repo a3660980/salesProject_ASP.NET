@@ -132,17 +132,30 @@
             <td></td>
         </tr>
         <tbody id="tbContent">
-
-            @for (int i = 0; i < Model.OrderDetails.Count; i++)
+            @if (Model.OrderDetails == null)
             {
                 <tr>
-                    <td>@Html.DropDownListFor(m => Model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
-                    <td>@Html.TextBoxFor(m => Model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
-                    <td>@Html.TextBoxFor(m => Model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
+                    <td>@Html.DropDownListFor(m => Model.OrderDetails[0].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
+                    <td>@Html.TextBoxFor(m => Model.OrderDetails[0].UnitPrice, new { @class = "UnitPrice" })</td>
+                    <td>@Html.TextBoxFor(m => Model.OrderDetails[0].Qty, new { @class = "Qty" })</td>
                     <td></td>
                     <td><button type="button" class="btnRemove">取消</button></td>
                 </tr>
             }
+            else
+            {
+                for (int i = 0; i < Model.OrderDetails.Count; i++)
+                {
+                    <tr>
+                        <td>@Html.DropDownListFor(m => Model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
+                        <td>@Html.TextBoxFor(m => Model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
+                        <td>@Html.TextBoxFor(m => Model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
+                        <td></td>
+                        <td><button type="button" class="btnRemove">取消</button></td>
+                    </tr>
+                }
+            }
+           
         </tbody>
     </table>
 
