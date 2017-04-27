@@ -18,7 +18,7 @@
                 @Html.LabelFor(model => model.CustomerID)
             </td>
             <td colspan="3">
-                @Html.DropDownListFor(model => model.CustomerID, (List<SelectListItem>)ViewBag.Customer)
+                @Html.DropDownListFor(model => model.CustomerID, (List<SelectListItem>)ViewBag.Customer,"請選擇客戶")
                 @Html.ValidationMessageFor(model => model.CustomerID)
             </td>
         </tr>
@@ -26,7 +26,7 @@
         <tr>
             <td>@Html.LabelFor(model => model.EmployeeID)</td>
             <td>
-                @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.Emp)
+                @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.Emp,"請選擇員工")
                 @Html.ValidationMessageFor(model => model.EmployeeID)
             </td>
         </tr>
@@ -132,28 +132,17 @@
             <td></td>
         </tr>
         <tbody id="tbContent">
-            @if (Model.OrderDetails == null)
+            @for (int i = 0; i < Model.OrderDetails.Count; i++)
             {
                 <tr>
-                    <td>@Html.DropDownListFor(m => Model.OrderDetails[0].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
-                    <td>@Html.TextBoxFor(m => Model.OrderDetails[0].UnitPrice, new { @class = "UnitPrice" })</td>
-                    <td>@Html.TextBoxFor(m => Model.OrderDetails[0].Qty, new { @class = "Qty" })</td>
+
+                    <td>@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product)</td>
+                    <td>@Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
+                    <td>@Html.TextBoxFor(model => model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
                     <td></td>
                     <td><button type="button" class="btnRemove">取消</button></td>
                 </tr>
-            }
-            else
-            {
-                for (int i = 0; i < Model.OrderDetails.Count; i++)
-                {
-                    <tr>
-                        <td>@Html.DropDownListFor(m => Model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
-                        <td>@Html.TextBoxFor(m => Model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
-                        <td>@Html.TextBoxFor(m => Model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
-                        <td></td>
-                        <td><button type="button" class="btnRemove">取消</button></td>
-                    </tr>
-                }
+
             }
            
         </tbody>

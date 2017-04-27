@@ -15,7 +15,7 @@ namespace salesProject.Models
         /// <summary>
         /// 產品代號
         /// </summary>
-        public int ProductId { get; set; }
+        public string ProductId { get; set; }
 
         /// <summary>
         /// 單價

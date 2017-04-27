@@ -91,11 +91,7 @@ namespace salesProject.Models
         {
             List<SelectListItem> result = new List<SelectListItem>();
 
-            result.Add(new SelectListItem()
-            {
-                Text = "請選擇資料",
-                Value = ""
-            });
+            
             foreach (DataRow row in dt.Rows)
             {
                 result.Add(new SelectListItem()
@@ -208,7 +204,7 @@ namespace salesProject.Models
                     Details.Add(new OrderDetails()
                     {
                         OrderId = Convert.ToInt32(row["OrderID"]),
-                        ProductId = Convert.ToInt32(row["ProductID"]),
+                        ProductId = Convert.ToString(row["ProductID"]),
                         UnitPrice = Convert.ToInt32(row["UnitPrice"]),
                         Qty = Convert.ToDecimal(row["Qty"]),
                         Discount = Convert.ToDouble(row["Discount"])

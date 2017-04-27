@@ -40,9 +40,9 @@ namespace salesProject.Controllers
         [HttpGet()]
         public ActionResult InsertOrder()
         {
-            ViewBag.Emp = OrderService.GetEmp();
-            ViewBag.Product = OrderService.GetProduct();
-            ViewBag.Customer = OrderService.GetCustomer();
+            ViewBag.Emp = this.OrderService.GetEmp();
+            ViewBag.Product = this.OrderService.GetProduct();
+            ViewBag.Customer = this.OrderService.GetCustomer();
             Models.Order order = new Models.Order();
             order.OrderDetails =new List<Models.OrderDetails>();
             return View(order);
@@ -93,6 +93,11 @@ namespace salesProject.Controllers
 
         }
 
+        /// <summary>
+        /// 更新訂單頁面
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult UpdateOrder(string id)
         {
@@ -100,9 +105,9 @@ namespace salesProject.Controllers
             {
                 return RedirectToAction("Index");
             }
-            ViewBag.Emp = OrderService.GetEmp();
-            ViewBag.Product = OrderService.GetProduct();
-            ViewBag.Customer = OrderService.GetCustomer();
+            ViewBag.Emp = this.OrderService.GetEmp();
+            ViewBag.Product = this.OrderService.GetProduct();
+            ViewBag.Customer = this.OrderService.GetCustomer();
             Models.OrderService orderservice = new Models.OrderService();
             Models.Order model = orderservice.GetOrderById(id);
             return View(model);

@@ -137,12 +137,14 @@
                     @for (int i = 0; i < Model.OrderDetails.Count; i++)
                     {
                         <tr>
-                            <td>@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
+                         
+                            <td id="">@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product)</td>
                             <td>@Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
                             <td>@Html.TextBoxFor(model => model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
-                            <td></td>
+                            <td id="sum @i"></td>
                             <td><button type="button" class="btnRemove">取消</button></td>
                         </tr>
+                     
                     }
                 
             </tbody>
@@ -152,6 +154,8 @@
 }
 @section scripts{
     <script type="text/javascript">
+        
+
         //明細資料範本
         var trtemplate = $('#tbContent tr').eq(0).html();
 
