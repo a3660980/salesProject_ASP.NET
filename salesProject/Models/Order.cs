@@ -17,7 +17,9 @@ namespace salesProject.Models
         /// </summary>
         public  Order()
         {
-           
+            var de = new List<Models.OrderDetails>();
+            de.Add(new OrderDetails() { ProductId = "20",Qty = 10, UnitPrice=20, Discount=10 });
+            this.OrderDetails = de;
         }
        
 
@@ -59,6 +61,7 @@ namespace salesProject.Models
         /// 訂單日期
         /// </summary>
         /// 
+        [DataType(DataType.Date)]
         [DisplayName("訂單日期")]
         public DateTime? Orderdate { get; set; }
 
@@ -66,6 +69,7 @@ namespace salesProject.Models
         /// 需要日期
         /// </summary>
         /// 
+        [DataType(DataType.Date)]
         [DisplayName("需要日期")]
         public DateTime? RequireDdate { get; set; }
 
@@ -73,6 +77,7 @@ namespace salesProject.Models
         /// 出貨日期
         /// </summary>
         /// 
+        [DataType(DataType.Date)]
         [DisplayName("出貨日期")]
         public DateTime? ShippedDate { get; set; }
 

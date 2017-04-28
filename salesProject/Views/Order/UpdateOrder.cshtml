@@ -117,6 +117,7 @@
             <td>
                 <input type="submit" value="存檔" />
                 @Html.ActionLink("回前一頁", "Index")
+                @Html.HiddenFor(model => model.OrderId)
             </td>
             <td></td>
             <td></td>
@@ -130,6 +131,7 @@
                 <td>商品</td>
                 <td>單價</td>
                 <td>數量</td>
+                <td>折扣</td>
                 <td>小計</td>
                 <td></td>
             </tr>
@@ -141,7 +143,8 @@
                             <td id="">@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product)</td>
                             <td>@Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
                             <td>@Html.TextBoxFor(model => model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
-                            <td id="sum @i"></td>
+                            <td>@Html.TextBoxFor(model => model.OrderDetails[i].Discount, new { @class = "Discount" })</td>
+                            <td id="sum @i">@ViewBag.total[i]</td>
                             <td><button type="button" class="btnRemove">取消</button></td>
                         </tr>
                      

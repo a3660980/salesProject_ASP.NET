@@ -26,7 +26,7 @@
             <tr>
                 <td>負責員工</td>
                 <td>
-                    @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.EmpCodeData,"請選擇員工")
+                    @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.EmpCodeData, "請選擇員工")
                 </td>
             </tr>
             <tr>
@@ -35,20 +35,25 @@
                     @Html.TextBoxFor(model => model.OrderDate, new { @type = "date" })
                 </td>
             </tr>
-          
+
             <tr>
                 <td></td>
                 <td>
-                    <input type="submit" value="查詢" />
-                   <input type="button" value="清除" onclick="location.href='/Order'"/>
-                    @Html.ActionLink("新增訂單", "InsertOrder")
-                    
+                    <input class="btn btn-default" type="submit" value="查詢" />
+                    <input class="btn btn-default" type="button" value="清除" onclick="location.href='/Order'" />
+                    <input class="btn btn-default" type="button" value="新增訂單" onclick="location.href='/Order/InsertOrder'">
+
                 </td>
 
             </tr>
         </table>
     </div>
-
+    if (TempData["ok"] != null)
+    {
+        <div id="MssageBox" class="alert alert-success">
+            <i class="fa fa-info-circle pull-left fa-2x"></i>@TempData["ok"]
+        </div>
+    }
     <div id="SearchResultSection">
 
 
@@ -64,25 +69,25 @@
                     <td></td>
                     <td></td>
                 </tr>
-                
 
-                    @foreach (var item in (List<salesProject.Models.Order>)ViewBag.SearchResult)
-                        {
-                        <tr id='@item.OrderId'>
-                            <td>@item.OrderId</td>
-                            <td>@item.CustName</td>
-                            <td>@item.EmployeeID</td>
-                            <td>@item.Orderdate</td>
-                            <td>@item.ShippedDate</td>
-                            <td>@Html.ActionLink("修改", "UpdateOrder", new { id = item.OrderId }, new { id = item.OrderId })</td>
-                            <td>
-                                <a class="btnDelete" href="#">刪除</a>
-                                <input class="hidOrderId" type="hidden" value='@item.OrderId' />
-                            </td>
-                        </tr>
-                    }
 
-                
+                @foreach (var item in (List<salesProject.Models.Order>)ViewBag.SearchResult)
+                {
+                    <tr id='@item.OrderId'>
+                        <td>@item.OrderId</td>
+                        <td>@item.CustName</td>
+                        <td>@item.EmployeeID</td>
+                        <td>@item.Orderdate</td>
+                        <td>@item.ShippedDate</td>
+                        <td>@Html.ActionLink("修改", "UpdateOrder", new { id = item.OrderId }, new { id = item.OrderId, @class = "btn btn-default" })</td>
+                        <td>
+                            <a class="btnDelete" href="#">刪除</a>
+                            <input  class="hidOrderId" type="hidden" value='@item.OrderId' />
+                        </td>
+                    </tr>
+                }
+
+
             </table>
         }
 
@@ -91,10 +96,10 @@
 }
 
 <script type="text/javascript">
-    
+
     //按刪除POST JSON到DeleteOrder
     $(".btnDelete").click(function (e) {
-        
+
         var r = confirm("你確定要刪除嗎?");
         if (r == true) {
             var tr = $(this).closest('tr')
@@ -108,9 +113,9 @@
                 }
             });
         } else {
-           
+
         }
-       
+
         return false;
     });
 

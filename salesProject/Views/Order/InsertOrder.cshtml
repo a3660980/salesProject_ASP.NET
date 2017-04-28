@@ -18,7 +18,7 @@
                 @Html.LabelFor(model => model.CustomerID)
             </td>
             <td colspan="3">
-                @Html.DropDownListFor(model => model.CustomerID, (List<SelectListItem>)ViewBag.Customer,"請選擇客戶")
+                @Html.DropDownListFor(model => model.CustomerID, (List<SelectListItem>)ViewBag.Customer, "請選擇客戶")
                 @Html.ValidationMessageFor(model => model.CustomerID)
             </td>
         </tr>
@@ -26,7 +26,7 @@
         <tr>
             <td>@Html.LabelFor(model => model.EmployeeID)</td>
             <td>
-                @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.Emp,"請選擇員工")
+                @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.Emp, "請選擇員工")
                 @Html.ValidationMessageFor(model => model.EmployeeID)
             </td>
         </tr>
@@ -128,23 +128,26 @@
             <td>商品</td>
             <td>單價</td>
             <td>數量</td>
+            <td>折扣</td>
             <td>小計</td>
             <td></td>
         </tr>
         <tbody id="tbContent">
-            @for (int i = 0; i < Model.OrderDetails.Count; i++)
-            {
-                <tr>
 
-                    <td>@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product)</td>
+            @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                {
+                <tr>
+                    <td>@Html.DropDownListFor(model => model.OrderDetails[i].ProductId, (List<SelectListItem>)ViewBag.Product, new { @class = "ProductId" })</td>
                     <td>@Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice" })</td>
                     <td>@Html.TextBoxFor(model => model.OrderDetails[i].Qty, new { @class = "Qty" })</td>
+                    <td>@Html.TextBoxFor(model => model.OrderDetails[i].Discount, new { @class = "Discount" })</td>
                     <td></td>
                     <td><button type="button" class="btnRemove">取消</button></td>
                 </tr>
-
             }
-           
+
+
+
         </tbody>
     </table>
 
@@ -158,6 +161,7 @@
         $("#addNewDetial").click(function (e) {
             $('#tbContent').append('<tr>' + trtemplate + '</tr>');
         });
+        
 
         //移除TR
         $('#tbContent').on('click', '.btnRemove', function () {
@@ -167,7 +171,7 @@
 
         //表單送出前置換element name 讓Action 可以讀到OrderDetials
         $('form').submit(function () {
-            for (var i = 0 ; i < $('#tbContent tr').length; i++) {
+            for (var i = 0; i < $('#tbContent tr').length; i++) {
                 $('.ProductId').eq(i).attr('name', 'OrderDetails[' + i + '].ProductId');
                 $('.Qty').eq(i).attr('name', 'OrderDetails[' + i + '].Qty');
                 $('.UnitPrice').eq(i).attr('name', 'OrderDetails[' + i + '].UnitPrice');
