@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 <h2>訂單查詢</h2>
 @using (Html.BeginForm("Index", "Order", FormMethod.Post, new { id = "Form1" }))
 {
@@ -39,7 +40,7 @@
             <tr>
                 <td></td>
                 <td>
-                    <input class="btn btn-default" type="submit" value="查詢" />
+                    <input class="btn btn-default" id="search" type="button" value="查詢" />
                     <input class="btn btn-default" type="button" value="清除" onclick="location.href='/Order'" />
                     <input class="btn btn-default" type="button" value="新增訂單" onclick="location.href='/Order/InsertOrder'">
 
@@ -54,71 +55,82 @@
             <i class="fa fa-info-circle pull-left fa-2x"></i>@TempData["ok"]
         </div>
     }
-    <div id="SearchResultSection">
-
-
-        @if (ViewBag.SearchResult != null)
-        {
-            <table class="table table-bordered table-striped">
-                <tr>
-                    <td>訂單編號</td>
-                    <td>客戶名稱</td>
-                    <td>員工編號</td>
-                    <td>訂購日期</td>
-                    <td>發貨日期</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-
-                @foreach (var item in (List<salesProject.Models.Order>)ViewBag.SearchResult)
-                {
-                    <tr id='@item.OrderId'>
-                        <td>@item.OrderId</td>
-                        <td>@item.CustName</td>
-                        <td>@item.EmployeeID</td>
-                        <td>@item.Orderdate</td>
-                        <td>@item.ShippedDate</td>
-                        <td>@Html.ActionLink("修改", "UpdateOrder", new { id = item.OrderId }, new { id = item.OrderId, @class = "btn btn-default" })</td>
-                        <td>
-                            <a class="btnDelete" href="#">刪除</a>
-                            <input  class="hidOrderId" type="hidden" value='@item.OrderId' />
-                        </td>
-                    </tr>
-                }
-
-
-            </table>
-        }
-
-
+    <div id="SearchResultSection">     
+        <div id="grid"></div>
     </div>
 }
 
 <script type="text/javascript">
+    $(function () {
+        $(".btn-default").kendoButton();
+        $(".btnDelete").kendoButton();
+        $("#search").click(function () {
 
-    $(".btn-default").kendoButton();
-    $(".btnDelete").kendoButton();
-    //按刪除POST JSON到DeleteOrder
-    $(".btnDelete").click(function (e) {
-
-        var r = confirm("你確定要刪除嗎?");
-        if (r == true) {
-            var tr = $(this).closest('tr')
             $.ajax({
                 type: "POST",
-                url: "/Order/DeleteOrder",
-                data: "orderId=" + $(this).next().val(),
+                url: "/Order/Order",
+                
                 dataType: "json",
                 success: function (response) {
-                    $(tr).remove();  //那行刪掉
+                    var sharedDataSource = new kendo.data.DataSource({
+                        data: response
+                    });
+                    $("#grid").kendoGrid({
+                        dataSource: sharedDataSource,
+                        columns: [
+                            {
+                                field: "CustName",
+                                title: "CustName"
+                            },
+                            {
+                                field: "CustomerID",
+                                title: "CustomerID",
+                            }]
+                    });
+                    console.log(sharedDataSource);
                 }
             });
-        } else {
+        })
+        /*
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Order/Order",
+                    dataType: "jsonp"
+                }
+            },
+            requestStart: function () {
+                kendo.ui.progress($("#grid"), true);
+            },
+            requestEnd: function () {
+                kendo.ui.progress($("#products"), false);
+            }
+        });
 
-        }
+        dataSource.read();
+       */
+   
 
-        return false;
+        //按刪除POST JSON到DeleteOrder
+        $(".btnDelete").click(function (e) {
+
+            var r = confirm("你確定要刪除嗎?");
+            if (r == true) {
+                var tr = $(this).closest('tr')
+                $.ajax({
+                    type: "POST",
+                    url: "/Order/DeleteOrder",
+                    data: "orderId=" + $(this).next().val(),
+                    dataType: "json",
+                    success: function (response) {
+                        $(tr).remove();  //那行刪掉
+                    }
+                });
+            } else {
+
+            }
+
+            return false;
+        });
     });
-
 </script>

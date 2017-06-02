@@ -13,6 +13,7 @@ namespace salesProject.Controllers
         /// 訂單管理首頁
         /// </summary>
         /// <returns></returns>
+        [HttpGet()]
         public ActionResult Index()
         {
             ViewBag.EmpCodeData = this.OrderService.GetEmp();
@@ -25,12 +26,11 @@ namespace salesProject.Controllers
         /// <param name="arg"></param>
         /// <returns></returns>
         [HttpPost()]
-        public ActionResult Index(Models.OrderSearchArg arg)
+        public JsonResult Order()
         {
             ViewBag.EmpCodeData = this.OrderService.GetEmp();
             Models.OrderService orderService = new Models.OrderService();
-            ViewBag.SearchResult = orderService.GetOrderByCondtioin(arg);
-            return View("Index");
+            return Json(orderService.GetOrderByCondtioin());
         }
 
         /// <summary>
