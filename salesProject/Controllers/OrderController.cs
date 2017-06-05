@@ -26,11 +26,11 @@ namespace salesProject.Controllers
         /// <param name="arg"></param>
         /// <returns></returns>
         [HttpPost()]
-        public JsonResult Order()
+        public JsonResult Order(Models.OrderSearchArg arg)
         {
             ViewBag.EmpCodeData = this.OrderService.GetEmp();
             Models.OrderService orderService = new Models.OrderService();
-            return Json(orderService.GetOrderByCondtioin());
+            return Json(orderService.GetOrderByCondtioin(arg));
         }
 
         /// <summary>

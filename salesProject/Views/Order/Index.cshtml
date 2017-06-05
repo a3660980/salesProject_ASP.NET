@@ -13,27 +13,26 @@
             <tr>
                 <td>客戶編號</td>
                 <td>
-                    @Html.TextBoxFor(model => model.OrderId)
+                    @Html.TextBox("OrderID")
 
                 </td>
             </tr>
             <tr>
                 <td>客戶名稱</td>
                 <td>
-                    @Html.TextBoxFor(model => model.CustName)
-
+                    @Html.TextBox("CustName")
                 </td>
             </tr>
             <tr>
                 <td>負責員工</td>
                 <td>
-                    @Html.DropDownListFor(model => model.EmployeeID, (List<SelectListItem>)ViewBag.EmpCodeData, "請選擇員工")
+                    @Html.DropDownList("EmployeeID", (List<SelectListItem>)ViewBag.EmpCodeData, "請選擇員工")
                 </td>
             </tr>
             <tr>
                 <td>訂購日期</td>
                 <td>
-                    @Html.TextBoxFor(model => model.OrderDate, new { @type = "date" })
+                    <input name="OrderDate" id="OrderDate" type="date">
                 </td>
             </tr>
 
@@ -41,7 +40,7 @@
                 <td></td>
                 <td>
                     <input class="btn btn-default" id="search" type="button" value="查詢" />
-                    <input class="btn btn-default" type="button" value="清除" onclick="location.href='/Order'" />
+                    <input class="btn btn-default" type="button" value="清除" id="clear"  />
                     <input class="btn btn-default" type="button" value="新增訂單" onclick="location.href='/Order/InsertOrder'">
 
                 </td>
@@ -62,31 +61,68 @@
 
 <script type="text/javascript">
     $(function () {
+        var columns = [
+            {
+                field: "OrderId",
+                title: "訂單編號"
+            },
+            {
+                field: "CustName",
+                title: "客戶姓名"
+            },
+            {
+                field: "CustomerID",
+                title: "客戶編號",
+            },
+            {
+                field: "ShipAddress",
+                title: "送貨地址"
+            }];
+        $("#grid").kendoGrid({
+            dataSource: [],
+            height: 550,
+            groupable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            columns: columns
+        });
+
         $(".btn-default").kendoButton();
         $(".btnDelete").kendoButton();
+        $("#clear").click(function () {
+            $('#OrderID').val('');
+            $('#CustName').val('');
+            $('#EmployeeID').val('');
+            $('#OrderDate').val('');
+            $("#grid").data('kendoGrid').dataSource.data([]);
+        });
         $("#search").click(function () {
-
+            var sdata = {
+                "arg.OrderId": $('#OrderID').val(),
+                "arg.CustName": $('#CustName').val(),
+                "arg.EmployeeID": $('#EmployeeID').val(),
+                "arg.OrderDate": $('#OrderDate').val(),
+            }
+            console.log(sdata)
             $.ajax({
                 type: "POST",
                 url: "/Order/Order",
-                
+                data: sdata,
                 dataType: "json",
                 success: function (response) {
                     var sharedDataSource = new kendo.data.DataSource({
-                        data: response
+                        data: response,
+                        pageSize: 20
                     });
                     $("#grid").kendoGrid({
                         dataSource: sharedDataSource,
-                        columns: [
-                            {
-                                field: "CustName",
-                                title: "CustName"
-                            },
-                            {
-                                field: "CustomerID",
-                                title: "CustomerID",
-                            }]
+                        columns: columns
                     });
+                    
                     console.log(sharedDataSource);
                 }
             });

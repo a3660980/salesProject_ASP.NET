@@ -156,11 +156,11 @@ namespace salesProject.Models
 		/// 依照條件取得訂單資料
 		/// </summary>
 		/// <returns></returns>
-		public List<Models.Order> GetOrderByCondtioin()
+		public List<Models.Order> GetOrderByCondtioin(Models.OrderSearchArg arg)
         {
 
             DataTable dt = new DataTable();
-            /*  string sql = @"SELECT 
+              string sql = @"SELECT 
                       A.OrderId,A.CustomerID,B.Companyname As CustName,
                       A.EmployeeID,C.lastname+ C.firstname As EmpName,
                       A.Orderdate,A.RequireDdate,A.ShippedDate,
@@ -172,8 +172,8 @@ namespace salesProject.Models
                       inner JOIN Sales.Shippers As D ON A.shipperid=D.shipperid
                       Where (A.OrderId Like '%' + @OrderId + '%' Or @OrderId='' ) And  (B.Companyname Like '%' + @CustName + '%' Or @CustName='') And 
                             (A.Orderdate=@Orderdate Or @Orderdate='') And (A.EmployeeID=@EmployeeID Or @EmployeeID='')  ";
-              */
-            string sql = @"SELECT 
+              
+           /* string sql = @"SELECT 
 					A.OrderId,A.CustomerID,B.Companyname As CustName,
 					A.EmployeeID,C.lastname+ C.firstname As EmpName,
 					A.Orderdate,A.RequireDdate,A.ShippedDate,
@@ -183,18 +183,18 @@ namespace salesProject.Models
 					INNER JOIN Sales.Customers As B ON A.CustomerID=B.CustomerID
 					INNER JOIN HR.Employees As C On A.EmployeeID=C.EmployeeID
 					inner JOIN Sales.Shippers As D ON A.shipperid=D.shipperid;";
-
+                */
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
-                /*
+                
                 cmd.Parameters.Add(new SqlParameter("@EmployeeID", arg.EmployeeID == null ? string.Empty : arg.EmployeeID));
                 cmd.Parameters.Add(new SqlParameter("@OrderId", arg.OrderId == null ? string.Empty : arg.OrderId));
                 cmd.Parameters.Add(new SqlParameter("@CustName", arg.CustName == null ? string.Empty : arg.CustName));
                 cmd.Parameters.Add(new SqlParameter("@Orderdate", arg.OrderDate == null ? string.Empty : arg.OrderDate));
-                */
+                
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
                 sqlAdapter.Fill(dt);
                 conn.Close();
