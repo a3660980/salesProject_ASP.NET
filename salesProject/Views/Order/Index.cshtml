@@ -32,7 +32,7 @@
             <tr>
                 <td>訂購日期</td>
                 <td>
-                    <input name="OrderDate" id="OrderDate" type="date">
+                    <input id="OrderDate" value="" title="datepicker" style="width: 100%" />
                 </td>
             </tr>
 
@@ -40,7 +40,7 @@
                 <td></td>
                 <td>
                     <input class="btn btn-default" id="search" type="button" value="查詢" />
-                    <input class="btn btn-default" type="button" value="清除" id="clear"  />
+                    <input class="btn btn-default" type="button" value="清除" id="clear" />
                     <input class="btn btn-default" type="button" value="新增訂單" onclick="location.href='/Order/InsertOrder'">
 
                 </td>
@@ -54,7 +54,7 @@
             <i class="fa fa-info-circle pull-left fa-2x"></i>@TempData["ok"]
         </div>
     }
-    <div id="SearchResultSection">     
+    <div id="SearchResultSection">
         <div id="grid"></div>
     </div>
 }
@@ -71,35 +71,75 @@
                 title: "客戶姓名"
             },
             {
-                field: "CustomerID",
-                title: "客戶編號",
+                field: "Orderdate",
+                title: "訂購日期",
+                format: "{0:MM/dd/yyyy}"
             },
             {
-                field: "ShipAddress",
-                title: "送貨地址"
+                field: "ShippedDate",
+                title: "出貨日期",
+                format: "{0:MM/dd/yyyy}"
+            },
+            {
+                command:
+                [{
+                    text: "Delete",
+                    click: deleteOrder
+                },
+                {
+                    text: "Edit",
+                    click: updateOrder
+                }],
+                title: " ",
+                width: "180px"
+            },
+            {
+                field: "OrderId",
+                title: "訂單編號",
+                hidden: true
             }];
-        $("#grid").kendoGrid({
-            dataSource: [],
+
+        //初始化grid
+        var g = $("#grid").kendoGrid({
+            dataSource: {
+                pageSize: 20
+            },
             height: 550,
             groupable: true,
             sortable: true,
+            schema: {
+                model: {
+                    fields: {
+                        OrderId: { type: "string" },
+                        CustName: { type: "string" },
+                        Orderdate: { type: "date" },
+                        ShippedDate: { type: "date" },
+                    }
+                }
+            },
             pageable: {
                 refresh: true,
                 pageSizes: true,
                 buttonCount: 5
             },
             columns: columns
-        });
+        }).data("kendoGrid");
 
         $(".btn-default").kendoButton();
         $(".btnDelete").kendoButton();
+        $("#OrderDate").kendoDatePicker();
+        $("#EmployeeID").kendoDropDownList();
+        $('#OrderID').kendoMaskedTextBox();
+        $('#CustName').kendoMaskedTextBox();
+
         $("#clear").click(function () {
             $('#OrderID').val('');
             $('#CustName').val('');
             $('#EmployeeID').val('');
             $('#OrderDate').val('');
-            $("#grid").data('kendoGrid').dataSource.data([]);
+            g.dataSource.data([]);
         });
+
         $("#search").click(function () {
             var sdata = {
                 "arg.OrderId": $('#OrderID').val(),
@@ -108,65 +148,44 @@
                 "arg.OrderDate": $('#OrderDate').val(),
             }
             console.log(sdata)
+           
             $.ajax({
                 type: "POST",
                 url: "/Order/Order",
                 data: sdata,
                 dataType: "json",
                 success: function (response) {
-                    var sharedDataSource = new kendo.data.DataSource({
-                        data: response,
-                        pageSize: 20
-                    });
-                    $("#grid").kendoGrid({
-                        dataSource: sharedDataSource,
-                        columns: columns
-                    });
-                    
-                    console.log(sharedDataSource);
+                    g.dataSource.data(response);
+                    g.dataSource.sync();
                 }
             });
+            
         })
-        /*
-        var dataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Order/Order",
-                    dataType: "jsonp"
-                }
-            },
-            requestStart: function () {
-                kendo.ui.progress($("#grid"), true);
-            },
-            requestEnd: function () {
-                kendo.ui.progress($("#products"), false);
-            }
-        });
 
-        dataSource.read();
-       */
-   
-
-        //按刪除POST JSON到DeleteOrder
-        $(".btnDelete").click(function (e) {
-
+        function deleteOrder(e) {
             var r = confirm("你確定要刪除嗎?");
             if (r == true) {
-                var tr = $(this).closest('tr')
+                var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                console.log(dataItem)
                 $.ajax({
                     type: "POST",
                     url: "/Order/DeleteOrder",
-                    data: "orderId=" + $(this).next().val(),
+                    data: "orderId=" + dataItem.OrderId,
                     dataType: "json",
                     success: function (response) {
-                        $(tr).remove();  //那行刪掉
+                        var order = g.dataSource;
+                        order.remove(dataItem);
+                        order.sync();
                     }
                 });
             } else {
-
+                return false;
             }
+        };
 
-            return false;
-        });
+        function updateOrder(e) {
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            window.location.href = '/Order/UpdateOrder/' + dataItem.OrderId;
+        }
     });
 </script>

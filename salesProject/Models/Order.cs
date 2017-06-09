@@ -61,25 +61,22 @@ namespace salesProject.Models
         /// 訂單日期
         /// </summary>
         /// 
-        [DataType(DataType.Date)]
+        
         [DisplayName("訂單日期")]
-        public DateTime? Orderdate { get; set; }
+        public string Orderdate { get; set; }
 
         /// <summary>
         /// 需要日期
         /// </summary>
         /// 
-        [DataType(DataType.Date)]
         [DisplayName("需要日期")]
-        public DateTime? RequireDdate { get; set; }
+        public string RequireDdate { get; set; }
 
         /// <summary>
         /// 出貨日期
         /// </summary>
-        /// 
-        [DataType(DataType.Date)]
         [DisplayName("出貨日期")]
-        public DateTime? ShippedDate { get; set; }
+        public string ShippedDate { get; set; }
 
         /// <summary>
         /// 出貨公司代號
